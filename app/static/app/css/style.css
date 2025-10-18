@@ -1,0 +1,87 @@
+.owl-carousel .item{
+ /* border: 1px solid black; */
+ font-size: 24px;
+ text-align: center;
+ margin-top: 20px;;
+}
+
+.owl-next{
+ float:right;
+}
+.owl-prev{
+ float:left;
+}
+.owl-prev span{
+ font-size: 24px;
+ font-weight: bold;
+}
+.owl-next span{
+ font-size: 24px;
+ font-weight: bold;
+}
+
+
+
+.product-card {
+  width: 230px;
+  transition: all 0.3s ease;
+  border: 1px solid #eee;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  border-color: #ddd;
+}
+
+.product-image-container {
+  height: 180px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.product-image {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.05);
+}
+
+.product-pricing {
+  margin-top: 5px;
+}
+
+.category-block h2 {
+  font-size: 1.5rem;
+  border-left: 5px solid #dc3545;
+  padding-left: 10px;
+  color: #333;
+}
+
+/* Space between product cards inside Owl Carousel */
+/* .category-slider .owl-item {
+  margin-right: 20px !important;
+}
+
+.category-slider .owl-stage {
+  margin-left: 10px;
+} */
+
+
+/* ✅ Force spacing between product cards inside Owl Carousel */
+.category-slider .owl-item > .product-card {
+  margin: 10px 15px !important;   /* vertical and horizontal spacing */
+}
+
+.category-slider .owl-stage {
+  display: flex !important;
+  gap: 20px !important;           /* adds clean gap between cards */
+  margin-left: 10px;
+  margin-right: 10px;
+}

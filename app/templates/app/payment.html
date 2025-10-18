@@ -1,0 +1,197 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}Payment{% endblock title %}
+
+{% block main-content %}
+<div class="container my-5">
+  <div class="row">
+    <div class="col-md-7">
+
+
+      <div class="card p-3 shadow-sm">
+
+      <form method="post" action="{% url 'paymentdone' %}" id="payment-form">
+        {% csrf_token %}
+        <div class="card p-3 shadow-sm mb-3">
+          <h5 class="mb-3">Shipping Address</h5>
+
+          {% if selected_customer %}
+            <div class="bg-light p-3 rounded border mb-2">
+              <h6 class="fw-semibold mb-1">{{ selected_customer.name }}</h6>
+              <small class="text-muted d-block">
+                {{ selected_customer.locality }}, {{ selected_customer.city }}<br>
+                {{ selected_customer.state }} - {{ selected_customer.zipcode }}
+              </small>
+            </div>
+            <input type="hidden" name="customer_id" value="{{ selected_customer.id }}">
+          {% else %}
+            <div class="alert alert-warning">No address selected. <a href="{% url 'checkout' %}">Go back</a></div>
+          {% endif %}
+        </div>
+
+        <hr>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <div class="small text-muted">Subtotal</div>
+            <div class="fw-semibold">₹{{ amount }}</div>
+          </div>
+          <div>
+            <div class="small text-muted">Shipping</div>
+            <div class="fw-semibold">₹{{ shipping }}</div>
+          </div>
+          <div>
+            <div class="small text-muted">Total</div>
+            <div class="fw-bold fs-5">₹{{ total_amount_display }}</div>
+          </div>
+        </div>
+
+        <!-- COD -->
+        <input type="hidden" name="method" value="cod">
+        <button type="submit" id="cod-button" class="btn btn-outline-dark w-100 mb-2">
+          Cash On Delivery
+        </button>
+
+        <!-- Pay Online -->
+        <button type="button" id="pay-online-button" class="btn btn-primary w-100">
+          Pay Online (Razorpay)
+        </button>
+      </form>
+
+      </div>
+
+    </div>
+
+    <div class="col-md-5">
+      <div class="card p-3 shadow-sm">
+        <h6 class="mb-2">Order Summary</h6>
+        {% for item in carts %}
+        <div class="d-flex justify-content-between small mb-2">
+          <div>{{ item.product.title }} x {{ item.quantity }}</div>
+          <div>₹{{ item.total_price }}</div>
+        </div>
+        {% endfor %}
+        <hr>
+        <div class="d-flex justify-content-between">
+          <div class="fw-semibold">Total</div>
+          <div class="fw-bold">₹{{ total_amount_display }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Place this right before the Razorpay script -->
+{{ razorpay_order|json_script:"razorpayOrderData" }}
+
+<!-- Razorpay script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+// Parse Razorpay order and key once when page loads
+const razorpayOrder = JSON.parse(document.getElementById('razorpayOrderData').textContent);
+const razorpayKey = "{{ razorpay_key_id }}";
+
+document.getElementById('pay-online-button').addEventListener('click', function(e){
+    // Gather selected customer id
+    // Gather selected customer id (works for both radio and hidden input)
+    let customer_id = null;
+
+    // Try radio button first
+    const custRadio = document.querySelector('input[name="customer_id"]:checked');
+    if (custRadio) {
+        customer_id = custRadio.value;
+    } else {
+        // Then fallback to hidden input (used when address is pre-selected)
+        const hiddenCust = document.querySelector('input[name="customer_id"][type="hidden"]');
+        if (hiddenCust && hiddenCust.value) {
+            customer_id = hiddenCust.value;
+        }
+    }
+
+    if (!customer_id) {
+        alert('Please select an address first.');
+        return;
+    }
+
+
+    // Safety check for empty or invalid order
+    if(!razorpayOrder || Object.keys(razorpayOrder).length === 0){
+        alert('Something wrong with order creation. Please try again.');
+        return;
+    }
+
+    const options = {
+        "key": razorpayKey,
+        "amount": razorpayOrder.amount, // in paise
+        "currency": razorpayOrder.currency,
+        "name": "UrbanCart",
+        "description": "Order payment",
+        "order_id": razorpayOrder.id,
+        "handler": function (response){
+            // When payment succeeds, submit to paymentdone view
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = "{% url 'paymentdone' %}";
+
+            // CSRF token input
+            const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrfmiddlewaretoken';
+            csrfInput.value = csrfToken;
+            form.appendChild(csrfInput);
+
+            // Method
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = 'method';
+            methodInput.value = 'razorpay';
+            form.appendChild(methodInput);
+
+            // Razorpay IDs
+            ['razorpay_payment_id', 'razorpay_order_id', 'razorpay_signature'].forEach(function(k){
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = k;
+                input.value = response[k];
+                form.appendChild(input);
+            });
+
+            // Customer ID
+            const custInput = document.createElement('input');
+            custInput.type = 'hidden';
+            custInput.name = 'customer_id';
+            custInput.value = customer_id;
+            form.appendChild(custInput);
+
+            document.body.appendChild(form);
+            form.submit();
+        },
+        "prefill": {
+            "name": "{{ request.user.get_full_name|default:request.user.username }}",
+            "email": "{{ request.user.email }}"
+        },
+        "theme": {
+            "color": "#0d6efd"
+        }
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
+});
+
+// Keep hidden field updated with selected customer id
+const radios = document.querySelectorAll('input[name="customer_id"]');
+const hiddenInput = document.getElementById('selected_customer_id');
+
+function updateHidden() {
+    const selected = document.querySelector('input[name="customer_id"]:checked');
+    if (selected) hiddenInput.value = selected.value;
+}
+
+radios.forEach(r => r.addEventListener('change', updateHidden));
+updateHidden(); // set initial value
+</script>
+
+{% endblock main-content %}

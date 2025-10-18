@@ -1,0 +1,161 @@
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Home{% endblock title %}
+
+{% block banner_slider %}
+<!-- Banner Section -->
+<div class="container-fluid mt-3 mb-5 px-0">
+  <div id="homepageCarousel" class="carousel slide shadow-sm rounded overflow-hidden" data-bs-ride="carousel" style="max-width: 90%; margin: 0 auto;">
+    <div class="carousel-inner" style="height: 250px;">
+      {% for banner in banners %}
+        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+          {% if banner.link %}
+            <a href="{{ banner.link }}">
+              <img src="{{ banner.image.url }}" class="d-block w-100 h-100 object-fit-cover" alt="{{ banner.title }}">
+            </a>
+          {% else %}
+            <img src="{{ banner.image.url }}" class="d-block w-100 h-100 object-fit-cover" alt="{{ banner.title }}">
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Custom small clean arrow buttons -->
+    <button class="carousel-control-prev custom-carousel-btn" type="button" data-bs-target="#homepageCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next custom-carousel-btn" type="button" data-bs-target="#homepageCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon"></span>
+    </button>
+  </div>
+</div>
+
+<style>
+  /* --- Carousel Design Fixes --- */
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.4);
+    background-size: 60%;
+    border-radius: 50%;
+    padding: 12px;
+  }
+
+  .custom-carousel-btn {
+    background: none !important;
+    border: none !important;
+    width: 5%;
+  }
+
+  .carousel-control-prev-icon:hover,
+  .carousel-control-next-icon:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+</style>
+{% endblock banner_slider %}
+
+{% block livesale %}
+{% for sale in current_sales %}
+  <div class="container mb-4">
+    <div class="row bg-danger text-center text-white p-4 rounded shadow-sm">
+      <h2 class="fw-bold mb-1">{{ sale.title }}</h2>
+      <p class="mb-0">{{ sale.description }}</p>
+    </div>
+  </div>
+{% endfor %}
+{% endblock livesale %}
+
+{% block main-content %}
+
+<!-- Category Bar -->
+<div class="container mb-4">
+  <div class="d-flex overflow-auto py-2">
+    <div class="category-item text-center">
+      <img src="{% static 'images/dummy1.jpg' %}" class="rounded mb-1" style="width:80px; height:80px; object-fit:cover;">
+      <div>Home & Kitchen</div>
+    </div>
+
+    <div class="category-item text-center">
+      <img src="{% static 'images/dummy2.jpg' %}" class="rounded mb-1" style="width:80px; height:80px; object-fit:cover;">
+      <div>Mobiles</div>
+    </div>
+
+    <div class="category-item text-center">
+      <img src="{% static 'images/dummy3.jpg' %}" class="rounded mb-1" style="width:80px; height:80px; object-fit:cover;">
+      <div>Books</div>
+    </div>
+
+    <div class="category-item text-center">
+      <img src="{% static 'images/dummy4.jpg' %}" class="rounded mb-1" style="width:80px; height:80px; object-fit:cover;">
+      <div>Fashion</div>
+    </div>
+
+    <div class="category-item text-center">
+      <img src="{% static 'images/dummy5.jpg' %}" class="rounded mb-1" style="width:80px; height:80px; object-fit:cover;">
+      <div>Sports</div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .category-item {
+    flex: 0 0 auto; /* prevents shrinking */
+    cursor: pointer;
+    padding: 0.5rem; /* internal spacing */
+    margin-right: 2cm; /* makes each item ~1cm apart */
+    transition: transform 0.2s;
+  }
+
+  .category-item:hover {
+    transform: scale(1.1);
+  }
+
+  /* Optional scrollbar style */
+  .overflow-auto::-webkit-scrollbar {
+    height: 6px;
+  }
+  .overflow-auto::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 3px;
+  }
+</style>
+
+
+
+
+
+{% comment %} Product Section {% endcomment %}
+<div class="container mb-5">
+  {% for cp in category_products_list %}
+    <div class="category-block mb-5">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="fw-bold mb-0">{{ cp.category.name }}</h3>
+        <a href="#" class="text-decoration-none small text-muted">View all →</a>
+      </div>
+
+      <div class="owl-carousel category-slider bg-white shadow-sm rounded py-4 px-3" 
+        style="border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+        {% for product in cp.products %}
+          <div class="product-card text-center bg-white shadow-sm rounded p-3 mx-4 my-3" style="width: 230px;">
+
+            <a href="{% url 'product-detail' product.id %}" class="text-decoration-none text-dark">
+              <div class="product-image-container mb-2" style="height: 180px;">
+                <img src="{{ product.product_img.url }}" alt="{{ product.title }}" class="img-fluid h-100 w-100 object-fit-contain">
+              </div>
+              <h6 class="fw-semibold mb-1 text-truncate">{{ product.title }}</h6>
+              <div class="product-pricing">
+                <span class="text-success fw-bold">₹{{ product.discounted_price }}</span>
+                {% if product.selling_price and product.discounted_price < product.selling_price %}
+                  <small class="text-muted text-decoration-line-through ms-2">₹{{ product.selling_price }}</small>
+                {% endif %}
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+
+{% endblock main-content %}

@@ -1,0 +1,57 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}Buy Now{% endblock title %}
+{% block main-content %}
+<div class="container my-5">
+ <div class="row">
+
+  <div class="col-sm-3">
+    <div class="list-group mb-3">
+        <a href="{% url 'mobile' %}" class="list-group-item list-group-item-action active" aria-current="true">All Mobiles</a>
+        <a href="{% url 'mobiledata' 'Samsung' %}" class="list-group-item list-group-item-action">Samsung</a>
+        <a href="{% url 'mobiledata' 'Apple' %}" class="list-group-item list-group-item-action">Apple</a>
+        <a href="{% url 'mobiledata' 'Google' %}" class="list-group-item list-group-item-action">Google</a>
+        <a href="{% url 'mobiledata' 'Xiaomi' %}" class="list-group-item list-group-item-action">Xiaomi</a>
+        <a href="{% url 'mobiledata' 'Vivo' %}" class="list-group-item list-group-item-action">Vivo</a>
+    </div>
+    <!-- ✅ PRICE FILTER -->
+    <div class="list-group">
+    <h6 class="text-center mb-2 fw-bold">Price Filter</h6>
+
+    {% if request.resolver_match.kwargs.data %}
+        <a href="{% url 'mobiledataprice' request.resolver_match.kwargs.data 0 10000 %}" class="list-group-item list-group-item-action">Below ₹10,000</a>
+        <a href="{% url 'mobiledataprice' request.resolver_match.kwargs.data 10000 20000 %}" class="list-group-item list-group-item-action">₹10,000 - ₹20,000</a>
+        <a href="{% url 'mobiledataprice' request.resolver_match.kwargs.data 20000 30000 %}" class="list-group-item list-group-item-action">₹20,000 - ₹30,000</a>
+        <a href="{% url 'mobiledataprice' request.resolver_match.kwargs.data 30000 50000 %}" class="list-group-item list-group-item-action">₹30,000 - ₹50,000</a>
+        <a href="{% url 'mobiledataprice' request.resolver_match.kwargs.data 50000 1000000 %}" class="list-group-item list-group-item-action">Above ₹50,000</a>
+    {% else %}
+        <a href="{% url 'mobileprice' 0 10000 %}" class="list-group-item list-group-item-action">Below ₹10,000</a>
+        <a href="{% url 'mobileprice' 10000 20000 %}" class="list-group-item list-group-item-action">₹10,000 - ₹20,000</a>
+        <a href="{% url 'mobileprice' 20000 30000 %}" class="list-group-item list-group-item-action">₹20,000 - ₹30,000</a>
+        <a href="{% url 'mobileprice' 30000 50000 %}" class="list-group-item list-group-item-action">₹30,000 - ₹50,000</a>
+        <a href="{% url 'mobileprice' 50000 1000000 %}" class="list-group-item list-group-item-action">Above ₹50,000</a>
+    {% endif %}
+    </div>
+
+  </div>
+
+
+  <div class="col-sm-8 offset-sm-1">
+   <div class="row">
+    {% for product in mobiles %}
+    <div class="col-sm-4 text-center mb-4">
+        <a href="{% url 'product-detail' product.id%}" class="btn">
+            <div class="item">
+                <img src="{{product.product_img.url}}" alt="" height="200px">
+                <span class="fw-bold">{{product.title}}</span><br>
+                <span class="fs-5">Rs. {{product.discounted_price}}</span>
+                <small class="fw-light text-decoration-line-through">{{product.selling_price}}</small>
+            </div>
+        </a> 
+    </div>
+    {% endfor %}
+   </div>
+  </div>
+ </div>
+</div>
+{% endblock main-content %}

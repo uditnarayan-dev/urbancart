@@ -1,0 +1,41 @@
+# Byte-compiled / python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual env
+.ucenv/
+ucenv/
+ENV/
+
+# Pytest / coverage
+htmlcov/
+.coverage
+.pytest_cache/
+
+# Django
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+staticfiles_collected/
+*.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# IDEs / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Distribution / build
+build/
+dist/
+*.egg-info/
+
+# Mac / Windows
+Thumbs.db
