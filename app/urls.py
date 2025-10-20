@@ -11,7 +11,7 @@ urlpatterns = [
 
     path('search/', views.SearchView.as_view(), name='search'),
 
-    # ✅ Dynamic Product Routes
+
     path('products/<slug:category_slug>/', views.product_list, name='product-list'),
     path('products/<slug:category_slug>/brand/<slug:brand_slug>/', views.product_list_by_brand, name='product-list-brand'),
     path('products/<slug:category_slug>/price/<int:min_price>/<int:max_price>/', views.product_list_by_price, name='product-list-price'),
@@ -22,7 +22,11 @@ urlpatterns = [
     path('cart/', views.show_cart, name='showcart'),
     path('buy/', views.buy_now, name='buy-now'),
     path('profile/', views.ProfileView.as_view(), name='profile'),
+
     path('address/', views.address, name='address'),
+    path('address/update/', views.update_address, name='update-address'),
+    path('address/delete/<int:id>/', views.delete_address, name='delete-address'),
+
     path('orders/', views.orders, name='orders'),
     path('checkout/', views.checkout, name='checkout'),
     path('payment/', views.payment, name='payment'),
@@ -36,6 +40,9 @@ urlpatterns = [
     path('accounts/login/', auth_views.LoginView.as_view(template_name='app/login.html', authentication_form=LoginForm), name='login'),
     path('logout/', views.custom_logout, name='logout'),
     path('registration/', views.CustomerRegistrationView.as_view(), name='customerregistration'),
+
+    path('category/<slug:category_slug>/', views.category_dummy, name='category-dummy'),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 urlpatterns += [

@@ -2,18 +2,13 @@ from django.contrib import admin
 from .models import Customer, Product, OrderPlaced, Cart, Category, Brand, ProductImage, Banner, Sale
 
 
-# ----------------------------
-# Customer
-# ----------------------------
 @admin.register(Customer)
 class CustomerModelAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'name', 'locality', 'city', 'zipcode', 'state']
     search_fields = ['name', 'city', 'state']
 
 
-# ----------------------------
-# Category
-# ----------------------------
+
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'slug', 'is_active']
@@ -22,9 +17,7 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
 
-# ----------------------------
-# Brand
-# ----------------------------
+
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'slug', 'is_active']
@@ -33,12 +26,10 @@ class BrandAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
 
-# ----------------------------
-# Product
-# ----------------------------
+
 class ProductImageInline(admin.TabularInline):
     model = ProductImage
-    extra = 1  # number of extra forms to display
+    extra = 1  
 
 @admin.register(Product)
 class ProductModelAdmin(admin.ModelAdmin):
@@ -52,9 +43,7 @@ class ProductModelAdmin(admin.ModelAdmin):
     autocomplete_fields = ['brand_fk', 'category_fk']
 
 
-# ----------------------------
-# Cart
-# ----------------------------
+
 @admin.register(Cart)
 class CartModelAdmin(admin.ModelAdmin):
     list_display = ['id', 'user', 'product', 'quantity']
@@ -62,9 +51,7 @@ class CartModelAdmin(admin.ModelAdmin):
     search_fields = ['user__username', 'product__title']
 
 
-# ----------------------------
-# OrderPlaced
-# ----------------------------
+
 @admin.register(OrderPlaced)
 class OrderPlacedModelAdmin(admin.ModelAdmin):
     list_display = [

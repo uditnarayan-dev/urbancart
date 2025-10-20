@@ -28,7 +28,6 @@ class SearchView(View):
         query = request.GET.get('q', '').strip()
         results = []
 
-        # Only search if the query has at least 3 characters
         if len(query) >= 3:
             results = Product.objects.filter(
                 Q(title__icontains=query) |
@@ -40,12 +39,9 @@ class SearchView(View):
         context = {
             'query': query,
             'results': results,
-            'min_length_required': len(query) < 3,  # So we can show a friendly message
+            'min_length_required': len(query) < 3,  
         }
         return render(request, 'app/search_results.html', context)
-
-
-
 
 
 def product_list(request, category_slug):
@@ -79,7 +75,6 @@ class ProductView(View):
     def get(self, request):
         from django.utils import timezone
 
-        # Only categories that actually have products
         categories = Category.objects.filter(products__isnull=False).distinct()
 
         # List of dictionaries: [{'category': cat, 'products': queryset}, ...]
@@ -91,10 +86,10 @@ class ProductView(View):
                 'products': products
             })
 
-        # Dynamic banners
+        # for dynamic banners
         banners = Banner.objects.filter(is_active=True)
 
-        # Active sales
+        # for active sales
         current_sales = Sale.objects.filter(
             is_active=True,
             start_date__lte=timezone.now(),
@@ -111,7 +106,7 @@ class ProductView(View):
 class ProductDetailView(View):
     def get(self, request, pk):
         product = Product.objects.get(id=pk)
-        gallery_images = product.images.all()  # all additional images
+        gallery_images = product.images.all()  
 
         item_already_in_cart = False
         if request.user.is_authenticated:
@@ -131,7 +126,7 @@ def add_to_cart(request):
     product_id = request.GET.get('prod_id')  
     product = Product.objects.get(id=product_id)
 
-    # Prevent duplicate entry
+    # here we prevent duplicate entry
     item_exist = Cart.objects.filter(user=user, product=product).exists()
     if not item_exist:
         Cart.objects.create(user=user, product=product)
@@ -144,12 +139,11 @@ def show_cart(request):
         user = request.user
         carts = Cart.objects.filter(user=user)
 
-        # calculate amount
         amount = 0
         for item in carts:
             amount += item.quantity * item.product.discounted_price
 
-        shipping = 70  # simple fixed shipping charge
+        shipping = 70 
         total_amount = amount + shipping if carts.exists() else 0
 
         context = {
@@ -164,7 +158,7 @@ def show_cart(request):
 
 
 
-# ------------------ PLUS CART ------------------
+# PLUS CARTT 
 def plus_cart(request):
     if request.method == 'GET':
         prod_id = request.GET['prod_id']
@@ -187,7 +181,7 @@ def plus_cart(request):
         return JsonResponse(data)
 
 
-# ------------------ MINUS CART ------------------
+# MINUS CART 
 def minus_cart(request):
     if request.method == 'GET':
         prod_id = request.GET['prod_id']
@@ -199,7 +193,7 @@ def minus_cart(request):
                 quantity = cart_item.quantity
             else:
                 cart_item.delete()
-                quantity = 0  # means item removed completely
+                quantity = 0  
         except Cart.DoesNotExist:
             quantity = 0
 
@@ -218,7 +212,7 @@ def minus_cart(request):
         return JsonResponse(data)
 
 
-# ------------------ REMOVE CART ------------------
+# REMOVE CART 
 def remove_cart(request):
     if request.method == 'GET':
         prod_id = request.GET['prod_id']
@@ -263,21 +257,44 @@ class ProfileView(View):
             reg = Customer(user=user, name=name, locality=locality, city = city,
                            state = state, zipcode = zipcode)
             reg.save()
-            messages.success(request, 'Profile updates successfully !!')
+            messages.success(request, 'Address Added successfully !!')
         return render(request, 'app/profile.html', {'form':form, 'active':'btn-primary'})
 
 @login_required
 def address(request):
     add = Customer.objects.filter(user = request.user)
-    return render(request, 'app/address.html', {'add':add, 'active':'btn-primary'})
+    form = CustomerProfileForm()
+    return render(request, 'app/address.html', {'add':add, 'form': form, 'active':'btn-primary'})
+
+@login_required
+def update_address(request):
+    if request.method == "POST":
+        address_id = request.POST.get('address_id')
+        address = get_object_or_404(Customer, id=address_id, user=request.user)
+        form = CustomerProfileForm(request.POST, instance=address)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Address updated successfully!")
+        else:
+            messages.error(request, "Something went wrong. Please try again.")
+    return redirect('address')
+
+@login_required
+def delete_address(request, id):
+    address = get_object_or_404(Customer, id=id, user=request.user)
+    if request.method == "POST":
+        address.delete()
+        messages.success(request, "Address deleted successfully!")
+    return redirect('address')
+
 
 
 #Password Reset
 class MyPasswordResetView(auth_views.PasswordResetView):
     template_name = 'app/password_reset.html'
-    email_template_name = 'app/password_reset_email.html'
+    html_email_template_name = 'app/password_reset_email.html'
+    subject_template_name = 'app/password_reset_subject.txt'
     success_url = reverse_lazy('password_reset_done')
-    # optional: you can customize form_class if needed
 
 class MyPasswordResetDoneView(auth_views.PasswordResetDoneView):
     template_name = 'app/password_reset_done.html'
@@ -299,11 +316,9 @@ class MyPasswordChangeView(PasswordChangeView):
 def mobile(request, data=None, min_price=None, max_price=None):
     mobiles = Product.objects.filter(category='M')
 
-    # if brand selected
     if data:
         mobiles = mobiles.filter(brand=data)
 
-    # if price range selected
     if min_price and max_price:
         mobiles = mobiles.filter(discounted_price__gte=min_price, discounted_price__lte=max_price)
 
@@ -328,9 +343,10 @@ class CustomerRegistrationView(View):
         form = CustomerRegistrationForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Congratulations !! Registered Successfully')
-            
-        return render(request, 'app/customerregistration.html', {'form':form})
+            messages.success(request, 'Congratulations !! Registered Successfully. Now Login')
+            return redirect('login')
+        else:   
+            return render(request, 'app/customerregistration.html', {'form':form})
 
 @login_required
 def checkout(request):
@@ -374,7 +390,6 @@ def orders(request):
 def payment(request):
     user = request.user
 
-    # If coming from checkout page (POST request)
     if request.method == "POST":
         selected_customer_id = request.POST.get("customer_id")
         if selected_customer_id:
@@ -383,10 +398,8 @@ def payment(request):
             messages.error(request, "Please select an address first.")
             return redirect("checkout")
 
-    # Retrieve from session (so refresh doesn’t lose it)
     selected_customer_id = request.session.get("selected_customer_id")
 
-    # Fetch the selected customer only
     selected_customer = None
     if selected_customer_id:
         selected_customer = Customer.objects.filter(id=selected_customer_id, user=user).first()
@@ -396,12 +409,11 @@ def payment(request):
         messages.error(request, "Your cart is empty.")
         return redirect("cart")
 
-    # Compute totals
     amount = sum(c.quantity * c.product.discounted_price for c in cart_items)
     shipping = 70.0 if amount > 0 else 0
     total_amount = int((amount + shipping) * 100)  # in paise for Razorpay
 
-    # Create Razorpay order
+    # creating Razorpay order
     client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
     razorpay_order = client.order.create({
         "amount": total_amount,
@@ -426,7 +438,7 @@ def payment(request):
 def payment_done(request):
     user = request.user
 
-    # 🟤 CASE A: COD
+    # CASE A: COD
     if request.method == "POST" and request.POST.get('method') == 'cod':
         customer_id = request.POST.get("customer_id") or request.POST.get("selected_customer_id")
         if not customer_id:
@@ -452,7 +464,7 @@ def payment_done(request):
         messages.success(request, "Order placed successfully (Cash On Delivery).")
         return redirect('orders')
 
-    # 🟢 CASE B: Razorpay
+    # CASE B: Razorpay
     if request.method == 'POST' and request.POST.get('method') == 'razorpay':
         payment_id = request.POST.get('razorpay_payment_id')
         order_id = request.POST.get('razorpay_order_id')
@@ -495,3 +507,16 @@ def payment_done(request):
 
     # fallback
     return redirect('checkout')
+
+
+
+def category_dummy(request, category_slug):
+    category_map = {
+        'home-kitchen': 'Home & Kitchen',
+        'mobiles': 'Mobiles',
+        'books': 'Books',
+        'fashion': 'Fashion',
+        'sports': 'Sports',
+    }
+    category_name = category_map.get(category_slug, 'Category')
+    return render(request, 'app/category_dummy.html', {'category_name': category_name})

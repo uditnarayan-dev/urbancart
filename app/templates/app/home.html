@@ -70,39 +70,43 @@
 <!-- Category Bar -->
 <div class="container mb-4">
   <div class="d-flex overflow-auto py-2">
-    <div class="category-item text-center">
-      <img src="{% static 'images/dummy1.jpg' %}" class="rounded mb-1" style="width:80px; height:80px; object-fit:cover;">
+    
+    <div class="category-item text-center me-3" style="cursor:pointer;" onclick="window.location.href='{% url 'category-dummy' 'home-kitchen' %}'">
+      <img src="{% static 'app/images/Home&Kitchen.jpg' %}" class="rounded mb-1" style="width:80px; height:80px; object-fit:cover;">
       <div>Home & Kitchen</div>
     </div>
 
-    <div class="category-item text-center">
-      <img src="{% static 'images/dummy2.jpg' %}" class="rounded mb-1" style="width:80px; height:80px; object-fit:cover;">
+    <div class="category-item text-center me-3" style="cursor:pointer;" onclick="window.location.href='{% url 'category-dummy' 'mobiles' %}'">
+      <img src="{% static 'app/images/Mobiles.jpg' %}" class="rounded mb-1" style="width:80px; height:80px; object-fit:cover;">
       <div>Mobiles</div>
     </div>
 
-    <div class="category-item text-center">
-      <img src="{% static 'images/dummy3.jpg' %}" class="rounded mb-1" style="width:80px; height:80px; object-fit:cover;">
+    <div class="category-item text-center me-3" style="cursor:pointer;" onclick="window.location.href='{% url 'category-dummy' 'books' %}'">
+      <img src="{% static 'app/images/Books.jpg' %}" class="rounded mb-1" style="width:80px; height:80px; object-fit:cover;">
       <div>Books</div>
     </div>
 
-    <div class="category-item text-center">
-      <img src="{% static 'images/dummy4.jpg' %}" class="rounded mb-1" style="width:80px; height:80px; object-fit:cover;">
+    <div class="category-item text-center me-3" style="cursor:pointer;" onclick="window.location.href='{% url 'category-dummy' 'fashion' %}'">
+      <img src="{% static 'app/images/Fashion.jpg' %}" class="rounded mb-1" style="width:80px; height:80px; object-fit:cover;">
       <div>Fashion</div>
     </div>
 
-    <div class="category-item text-center">
-      <img src="{% static 'images/dummy5.jpg' %}" class="rounded mb-1" style="width:80px; height:80px; object-fit:cover;">
+    <div class="category-item text-center me-3" style="cursor:pointer;" onclick="window.location.href='{% url 'category-dummy' 'sports' %}'">
+      <img src="{% static 'app/images/Sports.jpg' %}" class="rounded mb-1" style="width:80px; height:80px; object-fit:cover;">
       <div>Sports</div>
     </div>
+
   </div>
 </div>
+
 
 <style>
   .category-item {
     flex: 0 0 auto; /* prevents shrinking */
     cursor: pointer;
     padding: 0.5rem; /* internal spacing */
-    margin-right: 2cm; /* makes each item ~1cm apart */
+    margin-right: 1.5cm; 
+    margin-left: 1.5cm; 
     transition: transform 0.2s;
   }
 
@@ -128,10 +132,11 @@
 <div class="container mb-5">
   {% for cp in category_products_list %}
     <div class="category-block mb-5">
-      <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-3 category-header">
         <h3 class="fw-bold mb-0">{{ cp.category.name }}</h3>
-        <a href="#" class="text-decoration-none small text-muted">View all →</a>
+        <a href="{% url 'product-list' cp.category.slug %}" class="view-all-link">View all →</a>
       </div>
+
 
       <div class="owl-carousel category-slider bg-white shadow-sm rounded py-4 px-3" 
         style="border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
@@ -156,6 +161,32 @@
     </div>
   {% endfor %}
 </div>
+
+<style>
+  /* Add this to your stylesheet or inside <style> block */
+.category-header h3 {
+  font-size: 1.6rem; /* Slightly larger for modern emphasis */
+  letter-spacing: 0.5px;
+}
+
+.view-all-link {
+  font-weight: 500;
+  font-size: 0.95rem;
+  padding: 6px 14px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  color: #474747ff;
+}
+
+.view-all-link:hover {
+  background-color: #f1f1f1;
+  border-color: rgba(0, 0, 0, 0.3);
+  color: #000;
+}
+
+</style>
 
 
 {% endblock main-content %}

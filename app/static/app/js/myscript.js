@@ -1,27 +1,3 @@
-// $('#slider1, #slider2, #slider3').owlCarousel({
-//     loop: true,
-//     margin: 20,
-//     responsiveClass: true,
-//     responsive: {
-//         0: {
-//             items: 1,
-//             nav: false,
-//             autoplay: true,
-//         },
-//         600: {
-//             items: 3,
-//             nav: true,
-//             autoplay: true,
-//         },
-//         1000: {
-//             items: 5,
-//             nav: true,
-//             loop: true,
-//             autoplay: true,
-//         }
-//     }
-// })
-
 
 
 $('.category-slider').owlCarousel({
@@ -34,6 +10,26 @@ $('.category-slider').owlCarousel({
         1000: { items: 5, nav: true, loop: true, autoplay: true }
     }
 });
+
+// Show message from query param into input field
+
+document.querySelector('form.d-flex').addEventListener('submit', function(e) {
+    const searchInput = this.querySelector('input[name="q"]');
+    const query = searchInput.value.trim();
+
+    if (query.length < 3) {
+      e.preventDefault(); // Stop form submission
+      searchInput.value = ""; // Optional: clear previous short input
+      searchInput.placeholder = "Type atleast 3 characters..."; 
+      searchInput.classList.add("is-invalid");
+
+      setTimeout(() => {
+        searchInput.placeholder = "Search products..."; 
+        searchInput.classList.remove("is-invalid");
+      }, 2000);
+    }
+});
+
 
 
 

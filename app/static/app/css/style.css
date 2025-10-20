@@ -64,17 +64,9 @@
   color: #333;
 }
 
-/* Space between product cards inside Owl Carousel */
-/* .category-slider .owl-item {
-  margin-right: 20px !important;
-}
-
-.category-slider .owl-stage {
-  margin-left: 10px;
-} */
 
 
-/* ✅ Force spacing between product cards inside Owl Carousel */
+/* Force spacing between product cards inside Owl Carousel */
 .category-slider .owl-item > .product-card {
   margin: 10px 15px !important;   /* vertical and horizontal spacing */
 }
@@ -84,4 +76,10 @@
   gap: 20px !important;           /* adds clean gap between cards */
   margin-left: 10px;
   margin-right: 10px;
+}
+
+
+.is-invalid {
+  border-color: #f40000 !important;
+  box-shadow: 0 0 50px rgba(255, 0, 25, 0.5) !important;
 }

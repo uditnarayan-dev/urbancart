@@ -12,21 +12,49 @@
    </ul>
   </div>
   <div class="col-sm-8 offset-sm-1">
-   <form action="" method="post">
-    {% csrf_token %}
-    {% for fm in form %}
-    <div>
-      {{fm.label_tag}} {{fm}} <small>{{fm.errors|striptags}}</small>
-    </div>
-    {% endfor %}
-    <input type="submit" value="Submit" class="btn btn-primary mt-4">
-    </form>
+
     {% if messages %}
       {% for message in messages %}
-        <p>{{message}}</p>
+        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
       {% endfor %}
     {% endif %}
+
+    <form action="" method="post" class="p-4 shadow-sm rounded bg-light">
+      {% csrf_token %}
+      <h4 class="mb-3 fw-semibold">Add Your Address</h4>
+
+      <div class="row g-3">
+        {% for fm in form %}
+          <div class="col-md-6">
+            <label class="form-label fw-medium">{{ fm.label }}</label>
+            {{ fm }}
+            {% if fm.errors %}
+              <small class="text-danger">{{ fm.errors|striptags }}</small>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+
+      <button type="submit" class="btn btn-primary mt-4 w-100">Add Address</button>
+    </form>
+
   </div>
  </div>
 </div>
+
+<style>
+  form .form-control {
+  border-radius: 10px;
+  padding: 10px;
+}
+
+form h4 {
+  color: #0d6efd;
+}
+
+</style>
+
 {% endblock main-content %}

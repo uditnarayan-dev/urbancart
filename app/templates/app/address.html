@@ -11,24 +11,123 @@
     <li class="d-grid"><a href="{% url 'address' %}" class="btn {{active}}">Address</a></li>
    </ul>
   </div>
-  <div class="col-sm-9 offset-sm-1">
-   <div class="row">
-    {% for ad in add %}
-    <div class="col-sm-6">
-     <div class="card">
-      <div class="card-body">
-       <h3>Address {{forloop.counter}}</h3>
-       <p>Name: {{ad.name}}</p>
-       <p>Locality: {{ad.locality}}</p>
-       <p>City: {{ad.city}}</p>
-       <p>State: {{ad.state}}</p>
-       <p>Zipcode: {{ad.zipcode}}</p>
-      </div>
-     </div>
+
+
+    <div class="col-sm-9 offset-sm-1">
+
+    {% if messages %}
+    <div class="container">
+        {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-   </div>
-  </div>
+    {% endif %}
+
+    <div class="row">
+      {% if add %}
+        {% for ad in add %}
+        <div class="col-sm-6 mb-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+            <h5 class="card-title">Address {{ forloop.counter }}</h5>
+            <p class="card-text mb-1"><strong>Name:</strong> {{ ad.name }}</p>
+            <p class="card-text mb-1"><strong>Locality:</strong> {{ ad.locality }}</p>
+            <p class="card-text mb-1"><strong>City:</strong> {{ ad.city }}</p>
+            <p class="card-text mb-1"><strong>State:</strong> {{ ad.state }}</p>
+            <p class="card-text mb-3"><strong>Zipcode:</strong> {{ ad.zipcode }}</p>
+
+            <button 
+                class="btn btn-sm btn-outline-primary me-2 update-btn"
+                data-bs-toggle="modal"
+                data-bs-target="#updateAddressModal"
+                data-id="{{ ad.id }}"
+                data-name="{{ ad.name }}"
+                data-locality="{{ ad.locality }}"
+                data-city="{{ ad.city }}"
+                data-state="{{ ad.state }}"
+                data-zipcode="{{ ad.zipcode }}">
+                Update
+            </button>
+
+            <form action="{% url 'delete-address' ad.id %}" method="post" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+            </form>
+            </div>
+        </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <h5>You haven't added any addresses!!</h5>
+        {% endif %}
+        
+    </div>
+    </div>
+
  </div>
+
+<!-- Update Address Modal -->
+<div class="modal fade" id="updateAddressModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="{% url 'update-address' %}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="address_id" id="modal-address-id">
+
+        <div class="modal-header">
+          <h5 class="modal-title">Update Address</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          {{ form.name.label_tag }} 
+          <input type="text" name="name" id="modal-name" class="form-control mb-2">
+
+          {{ form.locality.label_tag }}
+          <input type="text" name="locality" id="modal-locality" class="form-control mb-2">
+
+          {{ form.city.label_tag }}
+          <input type="text" name="city" id="modal-city" class="form-control mb-2">
+
+          {{ form.state.label_tag }}
+          <select name="state" id="modal-state" class="form-control mb-2">
+            {% for value, name in form.fields.state.choices %}
+            <option value="{{ value }}">{{ name }}</option>
+            {% endfor %}
+          </select>
+
+          {{ form.zipcode.label_tag }}
+          <input type="number" name="zipcode" id="modal-zipcode" class="form-control mb-2">
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Update Address</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
+
+
+</div>
+
+<script>
+  document.querySelectorAll('.update-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+      document.getElementById('modal-address-id').value = this.dataset.id;
+      document.getElementById('modal-name').value = this.dataset.name;
+      document.getElementById('modal-locality').value = this.dataset.locality;
+      document.getElementById('modal-city').value = this.dataset.city;
+      document.getElementById('modal-zipcode').value = this.dataset.zipcode;
+
+      // Set the selected state
+      document.getElementById('modal-state').value = this.dataset.state;
+    });
+  });
+</script>
+
+
 {% endblock main-content %}

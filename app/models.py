@@ -47,9 +47,6 @@ class Customer(models.Model):
         return str(self.id)
 
 
-# -----------------------------
-# ✅ New Models
-# -----------------------------
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -87,10 +84,6 @@ class Brand(models.Model):
         return self.name
 
 
-# -----------------------------
-# ✅ Product Model (FK to Brand & Category)
-# -----------------------------
-
 class Product(models.Model):
     title = models.CharField(max_length=100)
     selling_price = models.FloatField()
@@ -111,9 +104,6 @@ class ProductImage(models.Model):
     def __str__(self):
         return f"{self.product.title} - Image {self.id}"
 
-# -----------------------------
-# Cart / Orders remain same
-# -----------------------------
 
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -151,7 +141,7 @@ class OrderPlaced(models.Model):
 class Banner(models.Model):
     title = models.CharField(max_length=100, blank=True)
     image = models.ImageField(upload_to='banners/')
-    link = models.URLField(blank=True, null=True)  # optional: redirect to product/category
+    link = models.URLField(blank=True, null=True)  # for redirect to product or category
     is_active = models.BooleanField(default=True)
     display_order = models.IntegerField(default=0)
 
