@@ -70,7 +70,7 @@ On checkout, users are redirected to Razorpay for secure payment.
 After successful payment, the order is created and stored.
 
 ---
-![Homepage](./app/images/Books.jpg)
+![Homepage](./app/static/app/images/Books.jpg)
 ![Product Listing](./screenshots/products.png)
 ![Cart Page](./screenshots/cart.png)
 ![Checkout](./screenshots/checkout.png)
@@ -80,4 +80,5 @@ After successful payment, the order is created and stored.
 
 ✅ Wishlist feature
 ✅ Coupon/Discount system
+
 ✅ Product reviews and rating system
